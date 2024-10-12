@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Διαδραστικός Ανατομικός Χάρτης - Κυκλοφορία Αίματος & Πεπτικό Σύστημα</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        #map-container {
+            position: relative;
+            width: 85%;
+            max-width: 1024px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            background-image: url('A_detailed_anatomical_illustration_of_the_human_ci.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            border: 2px solid #333;
+            border-radius: 10px;
+        }
+        .hotspot {
+            position: absolute;
+            width: 2.5%;
+            height: 2.5%;
+            background-color: red;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .hotspot:hover {
+            transform: scale(1.2);
+        }
+        .info-box {
+            display: none;
+            position: absolute;
+            background-color: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 220px;
+            overflow-wrap: break-word;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <!-- Targeted responsive hotspots -->
+        <div class="hotspot" style="top: 43%; left: 47%;" onclick="showInfo(event, 'heart')"></div>
+        <div class="hotspot" style="top: 38%; left: 41%;" onclick="showInfo(event, 'lungs')"></div>
+        <div class="hotspot" style="top: 46%; left: 55%;" onclick="showInfo(event, 'oxygen')"></div>
+        <div class="hotspot" style="top: 51%; left: 28%;" onclick="showInfo(event, 'coagulation')"></div>
+        <div class="hotspot" style="top: 61%; left: 46%;" onclick="showInfo(event, 'temperature')"></div>
+        <div class="hotspot" style="top: 37%; left: 23%;" onclick="showInfo(event, 'immunity')"></div>
+
+        <!-- Hotspots for digestive system -->
+        <div class="hotspot" style="top: 73%; left: 42%;" onclick="showInfo(event, 'stomach')"></div>
+        <div class="hotspot" style="top: 77%; left: 55%;" onclick="showInfo(event, 'intestines')"></div>
+        <div class="hotspot" style="top: 68%; left: 36%;" onclick="showInfo(event, 'liver')"></div>
+
+        <!-- Info Boxes -->
+        <div class="info-box" id="info-heart">Η καρδιά αντλεί αίμα σε όλο το σώμα, διασφαλίζοντας τη μεταφορά οξυγόνου και θρεπτικών ουσιών.</div>
+        <div class="info-box" id="info-lungs">Οι πνεύμονες οξυγονώνουν το αίμα και αφαιρούν το διοξείδιο του άνθρακα μέσω της αναπνοής.</div> <!-- Adjusted lower and left -->
+        <div class="info-box" id="info-oxygen">Το αίμα μεταφέρει οξυγόνο στους ιστούς και απομακρύνει το διοξείδιο του άνθρακα.</div>
+        <div class="info-box" id="info-coagulation">Το αίμα περιέχει αιμοπετάλια και πρωτεΐνες που βοηθούν στην πήξη και την επούλωση τραυμάτων.</div>
+        <div class="info-box" id="info-temperature">Το αίμα βοηθά στη ρύθμιση της θερμοκρασίας του σώματος μεταφέροντας θερμότητα.</div>
+        <div class="info-box" id="info-immunity">Τα λευκά αιμοσφαίρια στο αίμα προστατεύουν από λοιμώξεις και μικροοργανισμούς.</div> <!-- Adjusted lower and left -->
+        
+        <div class="info-box" id="info-stomach">Το στομάχι διασπά τροφές και αρχίζει την απορρόφηση θρεπτικών συστατικών.</div>
+        <div class="info-box" id="info-intestines">Τα έντερα απορροφούν τα θρεπτικά συστατικά και αποβάλλουν τα άχρηστα προϊόντα.</div>
+        <div class="info-box" id="info-liver">Το ήπαρ επεξεργάζεται τα θρεπτικά συστατικά και αποτοξινώνει το αίμα.</div>
+    </div>
+
+    <script>
+        function showInfo(event, type) {
+            // Hide all info boxes
+            document.querySelectorAll('.info-box').forEach(box => box.style.display = 'none');
+
+            // Show selected info box near the hotspot
+            const infoBox = document.getElementById(`info-${type}`);
+            infoBox.style.display = 'block';
+
+            // Position with specific adjustment for lungs and immunity info boxes
+            let topPosition = event.clientY - 30 + window.scrollY;
+            let leftPosition = event.clientX + 15 + window.scrollX;
+
+            if (type === "lungs" || type === "immunity") {
+                topPosition += 30; // Move further down
+                leftPosition -= 50; // Move left for visibility
+            }
+
+            // Boundary checks for consistent viewport alignment
+            if (topPosition + infoBox.offsetHeight > window.innerHeight + window.scrollY) {
+                topPosition = window.innerHeight + window.scrollY - infoBox.offsetHeight - 20;
+            }
+            if (leftPosition + infoBox.offsetWidth > window.innerWidth + window.scrollX) {
+                leftPosition = window.innerWidth + window.scrollX - infoBox.offsetWidth - 20;
+            }
+            
+            infoBox.style.top = `${topPosition}px`;
+            infoBox.style.left = `${leftPosition}px`;
+        }
+
+        // Hide info boxes when clicking outside hotspots
+        document.addEventListener('click', (event) => {
+            if (!event.target.classList.contains('hotspot')) {
+                document.querySelectorAll('.info-box').forEach(box => box.style.display = 'none');
+            }
+        });
+    </script>
+</body>
+</html>
